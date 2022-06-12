@@ -42,6 +42,6 @@ public class CurrenciesPresenter: CurrenciesPresenterProtocol {
     func didSelectCurrency(at index: Int) {
         let currency = getCurrnecyForRow(at: index)
         let currencyShortcut = currency.components(separatedBy: ":").first ?? ""
-        delegate?.didSelect(currnecy: currencyShortcut)
+        delegate?.didSelect(currency: currencyShortcut)
     }
 }

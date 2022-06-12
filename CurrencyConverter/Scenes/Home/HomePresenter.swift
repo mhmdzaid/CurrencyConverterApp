@@ -8,16 +8,26 @@
 import Foundation
 public protocol HomePresenterProtocol {
     var currencies: AllCurrencies { get set }
+    var selectedBaseCurrency: String { get set }
+    var numberOfListItems: Int { get }
     func getAllCurrencies()
     func getLatestCurrencyUpdates()
+    func updateCurrenciesList(amount: Double)
+    func getCurrencyListItem(at index: Int) -> String
 }
 
 public class HomePresenter: HomePresenterProtocol {
     private var service: CurrencyConverterServiceProtocol?
     private weak var view: HomeViewProtocol?
+    private var listElements: [String] = []
+    private var latestCurrencyValuesDict: [String: Double] = [:]
     public var currencies: AllCurrencies = [:]
+    public var selectedBaseCurrency: String = ""
+    public var numberOfListItems: Int {
+        return listElements.count
+    }
     
-    init(view: HomeViewProtocol? = nil, service: CurrencyConverterServiceProtocol? = CurrencyConverterService()) {
+    init(view: HomeViewProtocol?, service: CurrencyConverterServiceProtocol? = CurrencyConverterService()) {
         self.service = service
         self.view = view
     }
@@ -39,14 +49,34 @@ public class HomePresenter: HomePresenterProtocol {
     
     public func getLatestCurrencyUpdates() {
         service?.sendRequestWith(endPoint: .latest,
-                                 model: CurrenciesResponseModel.self) { result in
+                                 model: CurrenciesResponseModel.self) {[weak self] result in
             switch result {
             case .success(let model):
-                print(model.disclaimer ?? "")
+                self?.latestCurrencyValuesDict = model.rates ?? [:]
                 
             case .failure(let error):
                 print(error.localizedDescription)
             }
         }
+    }
+    
+    public func updateCurrenciesList(amount: Double) {
+        listElements = []
+        guard !selectedBaseCurrency.isEmpty else {
+            return
+        }
+        let valueForSelectedCurrency = latestCurrencyValuesDict[selectedBaseCurrency] ?? 0.0
+        latestCurrencyValuesDict.forEach { (key, value) in
+            if key != selectedBaseCurrency {
+                let convertedValue = (value / valueForSelectedCurrency) * amount
+                let convertedValueFormattedString = String(format: "%0.2f", arguments: [convertedValue])
+                self.listElements.append("\(key): \(convertedValueFormattedString)")
+            }
+        }
+        view?.refreshCurrenciesList()
+    }
+    
+    public func getCurrencyListItem(at index: Int) -> String {
+        return listElements[index]
     }
 }

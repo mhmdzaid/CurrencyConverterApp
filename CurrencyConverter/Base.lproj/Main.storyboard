@@ -62,22 +62,35 @@
                                     <constraint firstItem="Bqm-Dm-guP" firstAttribute="centerY" secondItem="tP5-N4-SXH" secondAttribute="centerY" id="toA-WO-0uE"/>
                                 </constraints>
                             </view>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="4BU-51-d7B">
+                                <rect key="frame" x="0.0" y="196" width="414" height="666"/>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                <connections>
+                                    <outlet property="dataSource" destination="BYZ-38-t0r" id="z98-CT-nhX"/>
+                                    <outlet property="delegate" destination="BYZ-38-t0r" id="r6R-YH-szE"/>
+                                </connections>
+                            </tableView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="4BU-51-d7B" secondAttribute="bottom" id="AlT-AJ-sYM"/>
                             <constraint firstItem="CxL-r9-fQG" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="30" id="TSu-Z9-oT3"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="4BU-51-d7B" secondAttribute="trailing" id="Vwp-bk-i1e"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="CxL-r9-fQG" secondAttribute="trailing" constant="16" id="Ybt-5k-uW1"/>
                             <constraint firstItem="tP5-N4-SXH" firstAttribute="top" secondItem="CxL-r9-fQG" secondAttribute="bottom" constant="16" id="azc-Oc-v8v"/>
+                            <constraint firstItem="4BU-51-d7B" firstAttribute="top" secondItem="tP5-N4-SXH" secondAttribute="bottom" constant="16" id="bFl-id-DBM"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="tP5-N4-SXH" secondAttribute="trailing" constant="16" id="diU-eT-gYG"/>
                             <constraint firstItem="CxL-r9-fQG" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="16" id="p72-3v-pyp"/>
                             <constraint firstItem="tP5-N4-SXH" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="16" id="pdc-0b-N0h"/>
+                            <constraint firstItem="4BU-51-d7B" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="xQ2-1W-xyW"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="EHG-Kd-PH7"/>
                     <connections>
                         <outlet property="amountTextField" destination="CxL-r9-fQG" id="aSF-Yw-z9H"/>
                         <outlet property="chooseCurrencyLabel" destination="NBH-3w-em4" id="m2X-Ci-kAm"/>
+                        <outlet property="tableView" destination="4BU-51-d7B" id="6E5-rR-YRI"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>

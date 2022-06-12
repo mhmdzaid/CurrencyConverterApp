@@ -10,7 +10,7 @@ protocol CurrenciesViewProtocol: AnyObject {
     func loadContent()
 }
 protocol CurrencySelector {
-    func didSelect(currnecy: String)
+    func didSelect(currency: String)
 }
 class CurrenciesViewController: UIViewController {
     @IBOutlet private weak var tableView: UITableView!
