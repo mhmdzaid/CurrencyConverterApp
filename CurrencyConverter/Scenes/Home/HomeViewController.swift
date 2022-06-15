@@ -36,8 +36,7 @@ class HomeViewController: UIViewController {
         super.viewDidLoad()
         amountTextField.delegate = self
         setUpActivityIndicator()
-        presenter?.getAllCurrencies()
-        presenter?.getLatestCurrencyUpdates()
+        presenter?.fetchAll()
     }
     
     private func setUpActivityIndicator() {

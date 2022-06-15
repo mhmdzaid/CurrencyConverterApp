@@ -14,10 +14,12 @@ public protocol HomePresenterProtocol {
     func getLatestCurrencyUpdates()
     func updateCurrenciesList(amount: Double)
     func getCurrencyListItem(at index: Int) -> String
+    func fetchAll()
 }
 
 public class HomePresenter: HomePresenterProtocol {
     private var dispatchGroup: DispatchGroup?
+    private var storageManager: LocalPersistenceManagerProtocol?
     private var service: CurrencyConverterServiceProtocol?
     private weak var view: HomeViewProtocol?
     private var listElements: [String] = []
@@ -28,13 +30,29 @@ public class HomePresenter: HomePresenterProtocol {
         return listElements.count
     }
     
-    init(view: HomeViewProtocol?, service: CurrencyConverterServiceProtocol? = CurrencyConverterService()) {
+    init(view: HomeViewProtocol?,
+         service: CurrencyConverterServiceProtocol? = CurrencyConverterService(),
+         storageManager: LocalPersistenceManagerProtocol? = LocalPersistenceManager()) {
         self.service = service
         self.view = view
+        self.storageManager = storageManager
         dispatchGroup = DispatchGroup()
         dispatchGroup?.notify(queue: .main, execute: { [weak self] in
             self?.view?.hideLoadingView()
+            self?.storageManager?.nextTimeToRefresh = Date.now.addingTimeInterval(1800) // capture time stamp for next refresh time
         })
+    }
+    
+    public func fetchAll() {
+        guard let nextTimeToRefresh = storageManager?.nextTimeToRefresh, nextTimeToRefresh > Date.now else {
+            // Get data from API
+            getAllCurrencies()
+            getLatestCurrencyUpdates()
+            return
+        }
+        // Get data from local storage
+        currencies = storageManager?.getAllCurrencies() ?? [:]
+        latestCurrencyValuesDict = storageManager?.getAllRates() ?? [:]
     }
     
     public func getAllCurrencies() {
@@ -47,6 +65,7 @@ public class HomePresenter: HomePresenterProtocol {
             switch result {
             case .success(let model):
                 self?.currencies = model
+                self?.storageManager?.save(currencies: self?.currencies ?? [:])
                 
             case .failure:
                 self?.view?.showErrorOverlay()
@@ -62,6 +81,7 @@ public class HomePresenter: HomePresenterProtocol {
             switch result {
             case .success(let model):
                 self?.latestCurrencyValuesDict = model.rates ?? [:]
+                self?.storageManager?.save(latestCurrencyRates: self?.latestCurrencyValuesDict ?? [:])
                 
             case .failure:
                 self?.view?.showErrorOverlay()
