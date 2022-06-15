@@ -14,7 +14,7 @@ protocol CurrenciesPresenterProtocol {
 }
 public class CurrenciesPresenter: CurrenciesPresenterProtocol {
     private weak var view: CurrenciesViewProtocol?
-    private let currencies: [String]
+    let currencies: [String]
     private var delegate: CurrencySelector?
 
     var numberOfCurrencies: Int {

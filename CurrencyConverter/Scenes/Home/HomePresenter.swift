@@ -17,6 +17,7 @@ public protocol HomePresenterProtocol {
 }
 
 public class HomePresenter: HomePresenterProtocol {
+    private var dispatchGroup: DispatchGroup?
     private var service: CurrencyConverterServiceProtocol?
     private weak var view: HomeViewProtocol?
     private var listElements: [String] = []
@@ -30,39 +31,48 @@ public class HomePresenter: HomePresenterProtocol {
     init(view: HomeViewProtocol?, service: CurrencyConverterServiceProtocol? = CurrencyConverterService()) {
         self.service = service
         self.view = view
+        dispatchGroup = DispatchGroup()
+        dispatchGroup?.notify(queue: .main, execute: { [weak self] in
+            self?.view?.hideLoadingView()
+        })
     }
     
     public func getAllCurrencies() {
-        service?.sendRequestWith(endPoint: .currencies,
-                                 model: AllCurrencies.self,
-                                 completion: { [weak self] result  in
+        view?.showLoadingView()
+        dispatchGroup?.enter()
+        self.service?.sendRequestWith(endPoint: .currencies,
+                                      model: AllCurrencies.self,
+                                      completion: { [weak self] result  in
             
             switch result {
             case .success(let model):
                 self?.currencies = model
                 
-            case .failure(let error):
-                print(error.localizedDescription)
+            case .failure:
+                self?.view?.showErrorOverlay()
             }
+            self?.dispatchGroup?.leave()
         })
     }
     
     public func getLatestCurrencyUpdates() {
-        service?.sendRequestWith(endPoint: .latest,
-                                 model: CurrenciesResponseModel.self) {[weak self] result in
+        dispatchGroup?.enter()
+        self.service?.sendRequestWith(endPoint: .latest,
+                                      model: CurrenciesResponseModel.self) {[weak self] result in
             switch result {
             case .success(let model):
                 self?.latestCurrencyValuesDict = model.rates ?? [:]
                 
-            case .failure(let error):
-                print(error.localizedDescription)
+            case .failure:
+                self?.view?.showErrorOverlay()
             }
+            self?.dispatchGroup?.leave()
         }
     }
     
     public func updateCurrenciesList(amount: Double) {
         listElements = []
-        guard !selectedBaseCurrency.isEmpty else {
+        guard !selectedBaseCurrency.isEmpty,amount != 0 else {
             return
         }
         let valueForSelectedCurrency = latestCurrencyValuesDict[selectedBaseCurrency] ?? 0.0

@@ -7,12 +7,25 @@
 
 import UIKit
 protocol HomeViewProtocol: AnyObject {
+    func showLoadingView()
+    func hideLoadingView()
+    func showErrorOverlay()
     func refreshCurrenciesList()
 }
 class HomeViewController: UIViewController {
     @IBOutlet private weak var chooseCurrencyLabel: UILabel!
     @IBOutlet private weak var amountTextField: UITextField!
     @IBOutlet private weak var tableView: UITableView!
+    lazy var activityIndicator: UIActivityIndicatorView = {
+        let activityIndicator = UIActivityIndicatorView(style: .large)
+        activityIndicator.translatesAutoresizingMaskIntoConstraints = false
+        activityIndicator.color = .white
+        activityIndicator.backgroundColor = .gray
+        activityIndicator.hidesWhenStopped = true
+        activityIndicator.startAnimating()
+        activityIndicator.layer.cornerRadius = 6
+        return activityIndicator
+    }()
     
     lazy var presenter: HomePresenterProtocol? = {
         let presenter = HomePresenter(view: self)
@@ -22,8 +35,20 @@ class HomeViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         amountTextField.delegate = self
+        setUpActivityIndicator()
         presenter?.getAllCurrencies()
         presenter?.getLatestCurrencyUpdates()
+    }
+    
+    private func setUpActivityIndicator() {
+        view.addSubview(activityIndicator)
+        view.bringSubviewToFront(activityIndicator)
+        NSLayoutConstraint.activate([
+            activityIndicator.widthAnchor.constraint(equalToConstant: 100),
+            activityIndicator.heightAnchor.constraint(equalToConstant: 100),
+            activityIndicator.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            activityIndicator.centerYAnchor.constraint(equalTo: view.centerYAnchor)
+        ])
     }
 }
 
@@ -40,6 +65,19 @@ extension HomeViewController {
 }
 
 extension HomeViewController: HomeViewProtocol {
+    func showErrorOverlay() {
+        // show Error overlay here 
+    }
+    
+    func showLoadingView() {
+        activityIndicator.isHidden = false
+        activityIndicator.startAnimating()
+    }
+    
+    func hideLoadingView() {
+        activityIndicator.stopAnimating()
+    }
+    
     func refreshCurrenciesList() {
         tableView.reloadData()
     }
