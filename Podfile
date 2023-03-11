@@ -6,7 +6,8 @@ target 'CurrencyConverter' do
   use_frameworks!
 
   # Pods for CurrencyConverter
-  
+  pod 'AFNetworking', '~> 4.0'
+
 end
 
 target 'CurrencyConverterTests' do
