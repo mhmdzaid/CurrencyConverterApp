@@ -25,7 +25,7 @@ public class HomePresenter: HomePresenterProtocol {
     private var listElements: [String] = []
     private var latestCurrencyValuesDict: [String: Double] = [:]
     public var currencies: AllCurrencies = [:]
-    public var selectedBaseCurrency: String = ""
+    public var selectedBaseCurrency : String = ""
     public var numberOfListItems: Int {
         return listElements.count
     }
